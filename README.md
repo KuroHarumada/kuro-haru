@@ -1,0 +1,2 @@
+# kuro-haru
+*Lightning flashes,buildings fall with one catching this sight...  Just another child?  No this one is not right.  With a destiny bigger then fate itself and an ambition just to match...  Wielding this power in the future no even more then that!  For his future is brighter then lightning itself and it  never will be stopped!  But a storm is coming faster and faster...  It may never be stopped.  But his power will be passed down...  To his household and precious kin.  Maybe that wont be enough?  Or maybe they might win!
