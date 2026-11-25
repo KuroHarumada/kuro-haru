@@ -16,6 +16,12 @@ Rojo **owns** those four folders. Anything you add inside them by hand in Studio
 removed on the next sync, so put changes in the repo instead (or ask Claude to).
 Everything else in your place (maps, models, your own folders) is left alone.
 
+## Controls (default)
+
+- **M1 (left click)**: 4-hit combo; the last hit launches.
+- **F (hold)**: guard, blocks hits from the front. Tapping F right before a hit lands **parries** it.
+- **Q**: dash the way you're walking (forward if standing). In the air: one air dash per jump.
+
 ## Tuning without coding
 
 - `src/shared/CombatSettings.luau`: global numbers (combo reset time, parry window, chip damage, keybinds, debug printing).
@@ -23,6 +29,7 @@ Everything else in your place (maps, models, your own folders) is left alone.
 - `src/client/CombatEffects.luau`: where hit VFX, sounds and camera shake go. Right now a hit flashes the victim white.
 
 Before publishing, turn off `Debug`, `ShowHitboxes` and `SpawnTestDummy` in `CombatSettings`.
+Set `TestDummyGuards = true` to make the dummy hold guard (for testing blocks and guard breaks).
 
 ## R6 only
 

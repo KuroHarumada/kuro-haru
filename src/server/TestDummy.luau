@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CombatSettings = require(ReplicatedStorage:WaitForChild("Combat"):WaitForChild("CombatSettings"))
 local CombatState = require(script.Parent:WaitForChild("CombatState"))
+local Guard = require(script.Parent:WaitForChild("Guard"))
 local Hitbox = require(script.Parent:WaitForChild("Hitbox"))
 
 local TestDummy = {}
@@ -46,6 +47,9 @@ local function spawnDummy()
 	dummy:PivotTo(getSpawnCFrame())
 	dummy.Parent = workspace
 	CombatState.Reset(dummy)
+	if CombatSettings.TestDummyGuards then
+		Guard.Request(dummy, true)
+	end
 
 	humanoid.Died:Connect(function()
 		CombatState.Remove(dummy)
