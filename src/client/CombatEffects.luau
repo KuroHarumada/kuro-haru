@@ -7,9 +7,11 @@
 	effects (particles, sounds, camera shake).
 	`data` holds: Attacker (Model), Victim (Model, the one being hit or guarding),
 	Move (string, e.g. "Jab1") and Damage (number).
+	Teleport events instead hold Character, and From / To positions.
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local EffectRemote: RemoteEvent = ReplicatedStorage:WaitForChild("CombatRemotes"):WaitForChild("Effect")
 
@@ -51,11 +53,45 @@ local function onGuardBroken(data)
 	flash(data.Victim, Color3.fromRGB(255, 120, 0), 0.4)
 end
 
+-- A quick glowing ball that fades out, used as placeholder teleport VFX.
+local function puff(position: unknown, color: Color3)
+	if typeof(position) ~= "Vector3" then
+		return
+	end
+	local ball = Instance.new("Part")
+	ball.Shape = Enum.PartType.Ball
+	ball.Anchored = true
+	ball.CanCollide = false
+	ball.CanQuery = false
+	ball.CanTouch = false
+	ball.CastShadow = false
+	ball.Material = Enum.Material.Neon
+	ball.Color = color
+	ball.Size = Vector3.one * 4
+	ball.Position = position
+	ball.Parent = workspace
+	TweenService:Create(ball, TweenInfo.new(0.25), { Size = Vector3.one * 7, Transparency = 1 }):Play()
+	task.delay(0.3, ball.Destroy, ball)
+end
+
+-- Kuro's teleport: wind-up started (data.Character).
+local function onTeleportStart(data)
+	flash(data.Character, Color3.fromRGB(120, 60, 255), 0.2)
+end
+
+-- Kuro's teleport: moved from data.From to data.To (positions).
+local function onTeleport(data)
+	puff(data.From, Color3.fromRGB(120, 60, 255))
+	puff(data.To, Color3.fromRGB(120, 60, 255))
+end
+
 local handlers = {
 	Hit = onHit,
 	Blocked = onBlocked,
 	Parried = onParried,
 	GuardBroken = onGuardBroken,
+	TeleportStart = onTeleportStart,
+	Teleport = onTeleport,
 }
 
 function CombatEffects.Start()

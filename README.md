@@ -21,6 +21,12 @@ Everything else in your place (maps, models, your own folders) is left alone.
 - **M1 (left click)**: 4-hit combo; the last hit launches.
 - **F (hold)**: guard, blocks hits from the front. Tapping F right before a hit lands **parries** it.
 - **Q**: dash the way you're walking (forward if standing). In the air: one air dash per jump.
+- **Z**: class special. For **Kuro**: vanish, appear behind the closest opponent (30 studs), and kick. 5 second cooldown.
+
+## Classes
+
+Class files live in `src/shared/Classes/` (one file per class: its combo and specials).
+Everyone starts as `DefaultClass` in `CombatSettings`. The player's class is the `Class` attribute on their Player.
 
 ## Tuning without coding
 
@@ -66,3 +72,18 @@ Studio (or the VS Code extension) so both are on the same version.
 
 Press **Play** and open the Output window. You should see `[Combat] Server loaded`
 and `[Combat] Client loaded`. Clicking, pressing F and pressing Q prints a line for each.
+
+## 2-player test checklist
+
+In Studio: **Test** tab > Clients and Servers > **2 players** > Start. Then, as player 1 against player 2:
+
+1. **Combo:** 4 clicks land all 4 hits; the 4th launches. Player 2 can't move or attack mid-string.
+2. **Combo reset:** pause about a second between clicks; the string restarts at hit 1.
+3. **Guard:** player 2 holds F facing you. Hits flash blue and do tiny damage. Keep hitting until it flashes orange (guard break).
+4. **Guard from behind:** player 2 guards facing away. Hits go through (white).
+5. **Parry:** player 2 taps F just before your hit lands. Gold flash on them, red on you, and you're stunned.
+6. **Dash:** Q while walking in each direction, and standing still. Then jump + Q (air dash), and a second Q in the same jump does nothing.
+7. **Teleport kick:** Z near player 2. You vanish, appear behind them facing them, and kick. Z again right away does nothing (cooldown).
+8. **Teleport near a wall:** player 2 stands with their back to a wall. You shouldn't end up inside the wall.
+9. **Teleport out of range:** Z with nobody within 30 studs. Nothing happens and Output says no one in range.
+10. **Getting hit cancels:** start a teleport kick and have player 2 hit you during the wind-up. The kick should not happen.

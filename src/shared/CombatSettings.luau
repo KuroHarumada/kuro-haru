@@ -12,6 +12,9 @@ local CombatSettings = {}
 
 CombatSettings.FPS = 60
 
+-- The class every player starts as (a file name in Combat > Classes).
+CombatSettings.DefaultClass = "Kuro"
+
 -- Combo --------------------------------------------------------------------
 -- How long (frames) after a swing before the M1 string resets back to hit 1.
 CombatSettings.ComboResetFrames = 45
@@ -89,6 +92,7 @@ CombatSettings.Keybinds = {
 	M1 = { Enum.UserInputType.MouseButton1 },
 	Guard = { Enum.KeyCode.F },
 	Dash = { Enum.KeyCode.Q },
+	Special1 = { Enum.KeyCode.Z },
 }
 
 function CombatSettings.FramesToSeconds(frames: number): number

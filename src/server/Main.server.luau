@@ -4,7 +4,7 @@
 	and passes them to the right handler.
 
 	M1 = combo (M1Combo), Guard = hold to block / tap to parry (Guard),
-	Dash = dash and air dash (Dash).
+	Dash = dash and air dash (Dash), Special1 = class special (Specials).
 ]]
 
 local Players = game:GetService("Players")
@@ -15,6 +15,8 @@ local CombatState = require(script.Parent:WaitForChild("CombatState"))
 local M1Combo = require(script.Parent:WaitForChild("M1Combo"))
 local Guard = require(script.Parent:WaitForChild("Guard"))
 local Dash = require(script.Parent:WaitForChild("Dash"))
+local Classes = require(script.Parent:WaitForChild("Classes"))
+local Specials = require(script.Parent:WaitForChild("Specials"))
 local TestDummy = require(script.Parent:WaitForChild("TestDummy"))
 
 local Remotes = ReplicatedStorage:WaitForChild("CombatRemotes")
@@ -46,6 +48,12 @@ end
 function Handlers.Dash(character: Model, isPressed: boolean, direction: unknown)
 	if isPressed then
 		Dash.Request(character, direction)
+	end
+end
+
+function Handlers.Special1(character: Model, isPressed: boolean, _extra: unknown)
+	if isPressed then
+		Specials.Request(character, "Special1")
 	end
 end
 
@@ -129,6 +137,7 @@ Players.PlayerRemoving:Connect(function(player)
 	requestLog[player] = nil
 end)
 
+Classes.Start()
 TestDummy.Start()
 
 debugPrint("Server loaded")
