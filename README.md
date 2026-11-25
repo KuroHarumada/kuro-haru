@@ -20,6 +20,18 @@ Everything else in your place (maps, models, your own folders) is left alone.
 
 - `src/shared/CombatSettings.luau`: global numbers (combo reset time, parry window, chip damage, keybinds, debug printing).
 - `src/shared/Moves/BasicCombo.luau`: the M1 string, one block per hit (damage, startup, hitstun, knockback, hitbox, animation id).
+- `src/client/CombatEffects.luau`: where hit VFX, sounds and camera shake go. Right now a hit flashes the victim white.
+
+Before publishing, turn off `Debug`, `ShowHitboxes` and `SpawnTestDummy` in `CombatSettings`.
+
+## R6 only
+
+The game is built for R6. Set it in Studio under **Avatar Settings** (Avatar tab), or
+**Game Settings > Avatar** on older Studio versions, then publish. If an R15 character
+ever spawns, the server prints a warning in Output.
+
+Animation ids must be owned by the same group/account that owns the place, or Roblox
+refuses to load them.
 
 Timing is in **frames at 60 per second** (60 = 1 second), like fighting games.
 

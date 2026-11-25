@@ -3,8 +3,8 @@
 	Receives button presses from players, checks they are allowed (anti-cheat),
 	and passes them to the right handler.
 
-	Step 1 (now): the pipeline only. Handlers print what they WOULD do.
-	Step 2 adds the real M1 combo, step 3 adds guard, parry and dashes.
+	Step 2 (now): M1 runs the real combo. Guard and Dash still only print;
+	step 3 adds guard, parry and dashes.
 ]]
 
 local Players = game:GetService("Players")
@@ -12,6 +12,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CombatSettings = require(ReplicatedStorage:WaitForChild("Combat"):WaitForChild("CombatSettings"))
 local CombatState = require(script.Parent:WaitForChild("CombatState"))
+local M1Combo = require(script.Parent:WaitForChild("M1Combo"))
+local TestDummy = require(script.Parent:WaitForChild("TestDummy"))
 
 local Remotes = ReplicatedStorage:WaitForChild("CombatRemotes")
 local ActionRemote: RemoteEvent = Remotes:WaitForChild("Action")
@@ -28,15 +30,10 @@ end
 
 local Handlers = {}
 
-function Handlers.M1(player: Player, character: Model, isPressed: boolean)
-	if not isPressed then
-		return
+function Handlers.M1(_player: Player, character: Model, isPressed: boolean)
+	if isPressed then
+		M1Combo.Request(character)
 	end
-	if not CombatState.CanAct(character) then
-		debugPrint(player.Name, "M1 ignored, state is", CombatState.GetState(character))
-		return
-	end
-	debugPrint(player.Name, "pressed M1 (combo comes in step 2)")
 end
 
 function Handlers.Guard(player: Player, character: Model, isPressed: boolean)
@@ -91,8 +88,21 @@ end)
 
 -- Character setup and cleanup ------------------------------------------------------
 
+local warnedAboutRig = false
+
 local function onCharacterAdded(character: Model)
 	CombatState.Reset(character)
+
+	-- The game is built for R6. Warn (once) if the avatar setting lets R15 in.
+	local humanoid = character:WaitForChild("Humanoid", 10) :: Humanoid?
+	if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R6 and not warnedAboutRig then
+		warnedAboutRig = true
+		warn(
+			"[Combat] A character spawned as R15. This game is made for R6: set it in "
+				.. "Avatar Settings (or Game Settings > Avatar) in Studio, then publish."
+		)
+	end
+
 	character.AncestryChanged:Connect(function(_, parent)
 		if parent == nil then
 			CombatState.Remove(character)
@@ -115,5 +125,7 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	requestLog[player] = nil
 end)
+
+TestDummy.Start()
 
 debugPrint("Server loaded")

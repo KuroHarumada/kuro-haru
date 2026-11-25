@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local CombatSettings = require(ReplicatedStorage:WaitForChild("Combat"):WaitForChild("CombatSettings"))
+local CombatEffects = require(script.Parent:WaitForChild("CombatEffects"))
 local ActionRemote: RemoteEvent = ReplicatedStorage:WaitForChild("CombatRemotes"):WaitForChild("Action")
 
 -- Build a lookup: input -> action name, from the keybinds in CombatSettings.
@@ -42,6 +43,8 @@ UserInputService.InputEnded:Connect(function(input)
 		ActionRemote:FireServer(action, false)
 	end
 end)
+
+CombatEffects.Start()
 
 if CombatSettings.Debug then
 	print("[Combat] Client loaded")
