@@ -1,0 +1,35 @@
+{
+  "name": "NYSU-Combat",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "Combat": {
+        "$path": "src/shared"
+      },
+      "CombatRemotes": {
+        "$className": "Folder",
+        "Action": {
+          "$className": "RemoteEvent"
+        },
+        "Effect": {
+          "$className": "RemoteEvent"
+        }
+      }
+    },
+
+    "ServerScriptService": {
+      "CombatServer": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "CombatClient": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
