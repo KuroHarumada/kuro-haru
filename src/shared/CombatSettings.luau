@@ -13,8 +13,18 @@ local CombatSettings = {}
 CombatSettings.FPS = 60
 
 -- Combo --------------------------------------------------------------------
--- How long (frames) after a hit before the M1 string resets back to hit 1.
+-- How long (frames) after a swing before the M1 string resets back to hit 1.
 CombatSettings.ComboResetFrames = 45
+-- If you press M1 this many frames (or fewer) before your current swing ends,
+-- the next swing comes out automatically as soon as it can ("input buffer").
+CombatSettings.InputBufferFrames = 10
+-- How long (frames) the knockback push lasts on the victim.
+CombatSettings.KnockbackFrames = 9
+
+-- Movement while fighting ------------------------------------------------------
+-- Walk speed while swinging. Normal walk speed and jump come from StarterPlayer.
+-- While stunned you can't walk or jump at all.
+CombatSettings.AttackingWalkSpeed = 6
 
 -- Guard and parry (used from step 3) -------------------------------------
 -- How much damage still goes through a guard (0.1 = 10%, called "chip").
@@ -38,10 +48,16 @@ CombatSettings.MaxRequestsPerSecond = 20
 -- Extra distance (studs) the server allows on hitboxes to make up for lag.
 CombatSettings.LagLeniencyStuds = 2
 
--- Debug -------------------------------------------------------------------------
--- When true, the Output window prints what the combat system is doing.
--- Turn this off before publishing.
+-- Debug and testing -----------------------------------------------------------------
+-- Turn ALL of these off before publishing.
+-- Prints what the combat system is doing in the Output window.
 CombatSettings.Debug = true
+-- Shows every hitbox as a see-through red box while it is active.
+CombatSettings.ShowHitboxes = true
+-- Spawns an R6 training dummy so you can test combos alone.
+CombatSettings.SpawnTestDummy = true
+-- Where the dummy spawns. nil = 12 studs in front of the first SpawnLocation.
+CombatSettings.TestDummyPosition = nil :: Vector3?
 
 -- Keybinds (the client reads these) -----------------------------------------------
 -- Names match Enum.KeyCode / Enum.UserInputType in Roblox.

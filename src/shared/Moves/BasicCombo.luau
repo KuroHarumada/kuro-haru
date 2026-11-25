@@ -15,8 +15,10 @@
 	  HitboxOffset  Where the box sits relative to the attacker's HumanoidRootPart.
 	                Negative Z = in front of the character.
 
-	Rule of thumb for a working combo: each hit's Hitstun should be longer than
-	the next hit's Startup plus a few frames, or the victim can escape mid-string.
+	Rule of thumb for a working combo: each hit's Hitstun must be longer than
+	(this hit's Active + Recovery + the next hit's Startup), plus ~4 frames of
+	safety for server timing. Otherwise the victim can escape mid-string.
+	Current values: Jab1 needs 16, Jab2 needs 17 (both have 22). Jab3 needs 22, has 28.
 	(60 frames = 1 second.)
 ]]
 
@@ -28,7 +30,7 @@ return {
 		Startup = 5,
 		Active = 3,
 		Recovery = 8,
-		Hitstun = 18,
+		Hitstun = 22,
 		Knockback = 2,
 		Launch = 0,
 		HitboxSize = Vector3.new(4, 5, 4),
@@ -41,7 +43,7 @@ return {
 		Startup = 5,
 		Active = 3,
 		Recovery = 8,
-		Hitstun = 18,
+		Hitstun = 22,
 		Knockback = 2,
 		Launch = 0,
 		HitboxSize = Vector3.new(4, 5, 4),
@@ -54,7 +56,7 @@ return {
 		Startup = 6,
 		Active = 3,
 		Recovery = 10,
-		Hitstun = 20,
+		Hitstun = 28,
 		Knockback = 3,
 		Launch = 0,
 		HitboxSize = Vector3.new(4, 5, 4.5),
