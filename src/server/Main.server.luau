@@ -3,8 +3,8 @@
 	Receives button presses from players, checks they are allowed (anti-cheat),
 	and passes them to the right handler.
 
-	Step 2 (now): M1 runs the real combo. Guard and Dash still only print;
-	step 3 adds guard, parry and dashes.
+	M1 = combo (M1Combo), Guard = hold to block / tap to parry (Guard),
+	Dash = dash and air dash (Dash).
 ]]
 
 local Players = game:GetService("Players")
@@ -13,6 +13,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CombatSettings = require(ReplicatedStorage:WaitForChild("Combat"):WaitForChild("CombatSettings"))
 local CombatState = require(script.Parent:WaitForChild("CombatState"))
 local M1Combo = require(script.Parent:WaitForChild("M1Combo"))
+local Guard = require(script.Parent:WaitForChild("Guard"))
+local Dash = require(script.Parent:WaitForChild("Dash"))
 local TestDummy = require(script.Parent:WaitForChild("TestDummy"))
 
 local Remotes = ReplicatedStorage:WaitForChild("CombatRemotes")
@@ -25,26 +27,26 @@ local function debugPrint(...)
 end
 
 -- Handlers --------------------------------------------------------------------
--- Each one gets (player, character, isPressed). isPressed is true when the
+-- Each one gets (character, isPressed, extra). isPressed is true when the
 -- button goes down and false when it is let go (used for holding guard).
+-- `extra` is anything else the client sent. NEVER trust it: each handler checks it.
 
 local Handlers = {}
 
-function Handlers.M1(_player: Player, character: Model, isPressed: boolean)
+function Handlers.M1(character: Model, isPressed: boolean, _extra: unknown)
 	if isPressed then
 		M1Combo.Request(character)
 	end
 end
 
-function Handlers.Guard(player: Player, character: Model, isPressed: boolean)
-	debugPrint(player.Name, isPressed and "started guarding" or "stopped guarding", "(guard comes in step 3)")
+function Handlers.Guard(character: Model, isPressed: boolean, _extra: unknown)
+	Guard.Request(character, isPressed)
 end
 
-function Handlers.Dash(player: Player, character: Model, isPressed: boolean)
-	if not isPressed then
-		return
+function Handlers.Dash(character: Model, isPressed: boolean, direction: unknown)
+	if isPressed then
+		Dash.Request(character, direction)
 	end
-	debugPrint(player.Name, "pressed Dash (dash comes in step 3)")
 end
 
 -- Anti-cheat: request rate limit -------------------------------------------------
@@ -64,7 +66,7 @@ end
 
 -- Incoming requests ----------------------------------------------------------------
 
-ActionRemote.OnServerEvent:Connect(function(player: Player, actionName: unknown, isPressed: unknown)
+ActionRemote.OnServerEvent:Connect(function(player: Player, actionName: unknown, isPressed: unknown, extra: unknown)
 	-- Never trust what the client sends: check every value's type first.
 	if typeof(actionName) ~= "string" or typeof(isPressed) ~= "boolean" then
 		return
@@ -83,7 +85,7 @@ ActionRemote.OnServerEvent:Connect(function(player: Player, actionName: unknown,
 		return
 	end
 
-	handler(player, character, isPressed)
+	handler(character, isPressed, extra)
 end)
 
 -- Character setup and cleanup ------------------------------------------------------
@@ -92,6 +94,7 @@ local warnedAboutRig = false
 
 local function onCharacterAdded(character: Model)
 	CombatState.Reset(character)
+	Dash.SetupCharacter(character)
 
 	-- The game is built for R6. Warn (once) if the avatar setting lets R15 in.
 	local humanoid = character:WaitForChild("Humanoid", 10) :: Humanoid?

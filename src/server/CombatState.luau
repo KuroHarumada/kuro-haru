@@ -32,7 +32,7 @@ local WALK_SPEED_BY_STATE = {
 	Idle = nil,
 	Attacking = CombatSettings.AttackingWalkSpeed,
 	Hitstun = 0,
-	Guarding = nil, -- step 3 will set this
+	Guarding = CombatSettings.GuardWalkSpeed,
 	GuardBroken = 0,
 	Dashing = nil,
 }
@@ -53,7 +53,17 @@ local function newRecord()
 		ComboIndex = 0, -- which hit of the M1 string was used last (0 = none yet)
 		LastComboTime = 0,
 		BufferedM1At = nil :: number?, -- when M1 was pressed during a swing (input buffer)
+		-- Guard
+		GuardHeld = false, -- is the guard key held down right now?
+		GuardStartedAt = 0, -- when guard went up (the parry window counts from here)
+		LastGuardPressAt = -math.huge,
+		BlockstunUntil = 0, -- can't act until this time after blocking a hit
 		GuardMeter = CombatSettings.GuardMeterMax,
+		GuardMeterUpdatedAt = os.clock(),
+		-- Dash
+		DashReadyAt = 0,
+		AirDashReadyAt = 0,
+		AirDashUsed = false,
 		AnimationTracks = {} :: { [string]: AnimationTrack },
 		CurrentTrack = nil :: AnimationTrack?,
 	}
@@ -116,6 +126,11 @@ function CombatState.Set(character: Model, state: string, durationFrames: number
 	if CombatSettings.Debug then
 		print(`[Combat] {character.Name} -> {state}` .. (durationFrames and ` ({durationFrames}f)` or ""))
 	end
+
+	-- Run last, because the hook may change the state again (e.g. straight back into Guarding).
+	if state == CombatState.States.Idle and CombatState.OnBecameIdle then
+		CombatState.OnBecameIdle(character, record)
+	end
 end
 
 -- True while `record` is still this character's current record and nothing
@@ -135,8 +150,13 @@ function CombatState.CanAct(character: Model): boolean
 	if not humanoid or humanoid.Health <= 0 then
 		return false
 	end
-	return CombatState.GetState(character) == CombatState.States.Idle
+	local record = CombatState.Get(character)
+	return record.State == CombatState.States.Idle and os.clock() >= record.BlockstunUntil
 end
+
+-- Optional hook, called every time a character goes back to Idle.
+-- (Guard uses it so holding the guard key through hitstun puts guard back up.)
+CombatState.OnBecameIdle = nil :: ((character: Model, record: Record) -> ())?
 
 -- Play an animation on the character from the server (it shows for everyone).
 -- Does nothing if animationId is empty.

@@ -3,9 +3,10 @@
 	Listens for the combat keybinds and tells the server about them.
 	The client only ASKS to attack; the server decides whether it happens.
 
-	Later steps will add animations, VFX and hit feedback here too.
+	Hit feedback (VFX) lives in CombatEffects.
 ]]
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
@@ -31,7 +32,12 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
 		return
 	end
 	local action = getAction(input)
-	if action then
+	if action == "Dash" then
+		-- Tell the server which way we're walking (zero = standing still).
+		local character = Players.LocalPlayer.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		ActionRemote:FireServer(action, true, humanoid and humanoid.MoveDirection or Vector3.zero)
+	elseif action then
 		ActionRemote:FireServer(action, true)
 	end
 end)
